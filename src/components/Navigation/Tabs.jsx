@@ -4,6 +4,8 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
+import TemporaryDrawer from "../Sidebar/Sidebar";
+
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -66,6 +68,7 @@ export default function BasicTabs({ handleTypeSelection }) {
         maxWidth: { xs: 410, sm: 580 },
       }}
     >
+       <TemporaryDrawer />
       <Box sx={{ width: "100%", borderBottom: 1, borderColor: "divider" }}>
         <Tabs
           value={value}

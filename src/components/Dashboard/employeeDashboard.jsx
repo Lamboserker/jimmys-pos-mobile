@@ -245,10 +245,7 @@ admin/sales?product=${selectedProduct}`,
     return cart.reduce((total, item) => total + item.quantity * item.price, 0);
   };
 
-  const handleMenuClick = () => {
-    setMenuIsOpen(true);
-    console.log(menuIsOpen);
-  };
+
 
   return (
     <>
@@ -259,14 +256,14 @@ admin/sales?product=${selectedProduct}`,
             <Badge
               badgeContent={cart.length}
               color="primary"
-              style={{ position: "absolute", top: 40, right: "30px" }}
+              style={{ position: "absolute", top: 0, right: "30px" }}
             ></Badge>
             <ShoppingCartIcon
               onClick={() => setCartDialogOpen(true)}
               style={{
                 cursor: "pointer",
                 position: "absolute",
-                top: 50,
+                top: 10,
                 right: 20,
               }}
             />
