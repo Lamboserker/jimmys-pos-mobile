@@ -20,20 +20,18 @@ import {
   Alert,
 } from "@mui/material";
 import { jwtDecode } from "jwt-decode";
-
+import MobileNavBar from "./MobileNavbar";
 //icon imports
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import MenuIcon from "@mui/icons-material/Menu";
-
 import ConfirmOrderDialog from "../Modals/ConfirmOrderDialog";
 import BasicTabs from "../Navigation/Tabs";
 
 const EmployeeDashboard = () => {
   const [items, setItems] = useState([]);
   const [cart, setCart] = useState([]);
-  const [cartDialogOpen, setCartDialogOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedTab, setSelectedTab] = useState(0);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
@@ -42,6 +40,8 @@ const EmployeeDashboard = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [selectedLetter, setSelectedLetter] = useState("");
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [cartDialogOpen, setCartDialogOpen] = useState(false);
   const { getEventType } = useEvent();
   const eventType = getEventType(); // Liefert den entschlüsselten Event-Typ
 
@@ -274,13 +274,13 @@ admin/sales?product=${selectedProduct}`,
   return (
     <>
       <div className="w-full h-ful">
-        <div className="fixed top-0 left-0 right-0  bg-black z-20 p-3 flex justify-between">
+        <div className="fixed top-0 left-0 right-0 bg-black z-20 p-3 flex justify-between">
           <BasicTabs handleTypeSelection={handleTypeSelection} />
           <div style={{ position: "absolute", top: "20px", right: 0 }}>
             <Badge
               badgeContent={cart.length}
               color="primary"
-              style={{ position: "absolute", top: 0, right: "30px" }}
+              style={{ position: "absolute", top: 0, right: "60px" }} // Abstand anpassen
             ></Badge>
             <ShoppingCartIcon
               onClick={() => setCartDialogOpen(true)}
@@ -306,7 +306,7 @@ admin/sales?product=${selectedProduct}`,
             {snackbarMessage}
           </Alert>
         </Snackbar>
-        <div className="flex flex-wrap justify-center items-center mt-44">
+        <div className="flex flex-wrap justify-center items-center mt-24">
           {filteredItems.map((item) => (
             <Button
               key={item._id}
@@ -392,6 +392,10 @@ admin/sales?product=${selectedProduct}`,
           </Button>
         </DialogActions>
       </Dialog>
+      <MobileNavBar
+        openDrawer={() => setDrawerOpen(true)}
+        openCartDialog={() => setCartDialogOpen(true)}
+      />
     </>
   );
 };

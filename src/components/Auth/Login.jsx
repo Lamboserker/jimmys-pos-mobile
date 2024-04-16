@@ -1,39 +1,47 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import CircularProgress from "@mui/material/CircularProgress";
+import Alert from "@mui/material/Alert";
+import Snackbar from "@mui/material/Snackbar";
 
 const Login = () => {
   const [userInput, setUserInput] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [open, setOpen] = useState(false);
   const apiUrl = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
 
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpen(false);
+  };
+
   const handleLogin = async (event) => {
     event.preventDefault();
+    setLoading(true);
 
     try {
-      const loginData = {
-        password,
-        ...(userInput.includes("@")
-          ? { email: userInput }
-          : { name: userInput }),
-      };
+      const loginData = userInput.includes("@")
+        ? { email: userInput, password } // Wenn die Eingabe ein "@" enthält, behandele es als E-Mail
+        : { name: userInput, password }; // Andernfalls behandele es als Benutzername
 
       const response = await axios.post(`${apiUrl}/users/login`, loginData);
-      localStorage.setItem("token", response.data.token);
-
-      // Überprüfen, ob ein Token vorhanden ist, um den erfolgreichen Login anzuzeigen
       if (response.data.token) {
-        // Falls erfolgreich eingeloggt, prüfen Sie nicht den Benutzerstatus
-        navigate("/picker"); // Annahme: Weiterleitung nach erfolgreicher Anmeldung
+        localStorage.setItem("token", response.data.token);
+        navigate("/picker");
       } else {
-        console.error("Kein Token erhalten. Login fehlgeschlagen.");
+        throw new Error("Login fehlgeschlagen. Kein Token erhalten.");
       }
     } catch (error) {
-      console.error(
-        "Login fehlgeschlagen:",
-        error.response?.data?.message || error.message
-      );
+      setError(error.response?.data?.message || "Anmeldefehler.");
+      setOpen(true);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -49,76 +57,70 @@ const Login = () => {
           <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-white">
             Melde dich an
           </h2>
-        </div>
-
-        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           <form className="space-y-6" onSubmit={handleLogin}>
             <div>
               <label
-                htmlFor="email"
-                className="block text-sm text-start font-medium leading-6 text-white"
+                htmlFor="userInput"
+                className="block text-sm font-medium text-white"
               >
                 Benutzername oder E-Mail
               </label>
-              <div className="mt-2">
-                <input
-                  id="userInput"
-                  name="userInput"
-                  type="text"
-                  autoComplete="username"
-                  required
-                  className="block w-full rounded-md border-0 py-1.5 px-2 text-white font-semibold shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  value={userInput}
-                  onChange={(e) => setUserInput(e.target.value)}
-                />
-              </div>
+              <input
+                id="userInput"
+                type="text"
+                required
+                disabled={loading}
+                autoComplete={userInput.includes("@") ? "email" : "username"}
+                className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                value={userInput}
+                onChange={(e) => setUserInput(e.target.value)}
+              />
             </div>
-
             <div>
-              <div className="flex items-center justify-between">
-                <label
-                  htmlFor="password"
-                  className="block text-sm font-medium leading-6 text-white"
-                >
-                  Passwort
-                </label>
-                <div className="text-sm">
-                  <a
-                    href="#"
-                    className="font-semibold text-indigo-600 hover:text-indigo-500"
-                  >
-                    Passwort vergessen?
-                  </a>
-                </div>
-              </div>
-              <div className="mt-2">
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  className="block w-full rounded-md border-0 py-1.5 px-2 text-white font-semibold shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-white"
+              >
+                Passwort
+              </label>
+              <input
+                id="password"
+                type="password"
+                required
+                disabled={loading}
+                autoComplete="current-password"
+                className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                onChange={(e) => setPassword(e.target.value)}
+              />
             </div>
-
             <div>
               <button
                 type="submit"
-                className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                disabled={loading}
               >
-                Anmelden
+                {loading ? (
+                  <CircularProgress size={24} color="inherit" />
+                ) : (
+                  "Anmelden"
+                )}
               </button>
             </div>
           </form>
-
-          <p className="mt-10 text-center text-sm text-gray-500">
+          <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+            <Alert
+              onClose={handleClose}
+              severity="error"
+              sx={{ width: "100%" }}
+            >
+              {error}
+            </Alert>
+          </Snackbar>
+          <p className="mt-4 text-center text-sm text-gray-500">
             Noch nicht registriert?{" "}
             <Link
               to="/register"
-              className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
+              className="text-indigo-600 hover:text-indigo-500"
             >
               Registriere dich hier!
             </Link>

@@ -63,19 +63,21 @@ export default function BasicTabs({ handleTypeSelection }) {
     }
   };
   return (
-    <Box
-      sx={{
-        maxWidth: { xs: 410, sm: 580 },
-      }}
-    >
-       <TemporaryDrawer />
-      <Box sx={{ width: "100%", borderBottom: 1, borderColor: "divider" }}>
+    <>
+      <Box
+        sx={{
+          width: "100%", // volle Breite verwenden
+          borderBottom: 1,
+          borderColor: "divider",
+          maxWidth: "100%", // Stelle sicher, dass keine maximale Breite eingestellt ist
+        }}
+      >
         <Tabs
           value={value}
           onChange={handleChange}
           aria-label="Alle Getränke filtern"
           variant="scrollable"
-          scrollButtons
+          scrollButtons="auto" // automatische Anzeige der Scroll-Buttons
           allowScrollButtonsMobile
         >
           <Tab
@@ -128,6 +130,6 @@ export default function BasicTabs({ handleTypeSelection }) {
       >
         Pfand
       </CustomTabPanel>
-    </Box>
+    </>
   );
 }
