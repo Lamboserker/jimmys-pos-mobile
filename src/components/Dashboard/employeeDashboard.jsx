@@ -276,22 +276,7 @@ admin/sales?product=${selectedProduct}`,
       <div className="w-full h-ful">
         <div className="fixed top-0 left-0 right-0 bg-black z-20 p-3 flex justify-between">
           <BasicTabs handleTypeSelection={handleTypeSelection} />
-          <div style={{ position: "absolute", top: "20px", right: 0 }}>
-            <Badge
-              badgeContent={cart.length}
-              color="primary"
-              style={{ position: "absolute", top: 0, right: "60px" }} // Abstand anpassen
-            ></Badge>
-            <ShoppingCartIcon
-              onClick={() => setCartDialogOpen(true)}
-              style={{
-                cursor: "pointer",
-                position: "absolute",
-                top: 10,
-                right: 20,
-              }}
-            />
-          </div>
+          <div style={{ position: "absolute", top: "20px", right: 0 }}></div>
         </div>
         <Snackbar
           open={snackbarOpen}
@@ -393,6 +378,7 @@ admin/sales?product=${selectedProduct}`,
         </DialogActions>
       </Dialog>
       <MobileNavBar
+        cartLength={cart.length}
         openDrawer={() => setDrawerOpen(true)}
         openCartDialog={() => setCartDialogOpen(true)}
       />

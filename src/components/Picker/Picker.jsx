@@ -42,14 +42,16 @@ const Picker = () => {
         Wähle die Art der Veranstaltung:
       </h1>
       <FormControl variant="filled" color="info" className="w-full max-w-xs">
-        <InputLabel id="event-type-label">Veranstaltungstyp</InputLabel>
+        <InputLabel sx={{ color: "white" }} id="event-type-label">
+          Veranstaltungstyp
+        </InputLabel>
         <Select
           labelId="event-type-label"
           label="Veranstaltungstyp"
           value={selectedType}
           onChange={handleEventSelection}
           className="bg-white text-gray-800"
-          sx={{color: "white"}}
+          sx={{ color: "white" }}
         >
           <MenuItem value="">
             <em>Bitte auswählen</em>
