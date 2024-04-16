@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useEvent } from "../../Context/EventContext";
 import axios from "axios";
 import {
   Button,
@@ -18,7 +19,8 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
-import TemporaryDrawer from "../Sidebar/Sidebar";
+import { jwtDecode } from "jwt-decode";
+
 //icon imports
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import AddIcon from "@mui/icons-material/Add";
@@ -40,8 +42,8 @@ const EmployeeDashboard = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [selectedLetter, setSelectedLetter] = useState("");
-  const [menuIsOpen, setMenuIsOpen] = useState(false);
-  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+  const { getEventType } = useEvent();
+  const eventType = getEventType(); // Liefert den entschlüsselten Event-Typ
 
   const navigate = useNavigate();
   const theme = useTheme();
@@ -124,31 +126,72 @@ admin/sales?product=${selectedProduct}`,
   }, [selectedProduct, navigate]);
 
   const handleAddToCart = (item, quantity = 1) => {
+    const deposit = 3; // Pfandpreis von 3 Euro
+    const basePrice = eventType === "schlemmermarkt" ? item.price2 : item.price;
+    const itemPrice = basePrice + deposit; // Berechne den Gesamtpreis inklusive Pfand
+
     setCart((prevCart) => {
-      const existingItem = prevCart.find(
+      const existingItemIndex = prevCart.findIndex(
         (cartItem) => cartItem._id === item._id
       );
-      if (existingItem) {
-        return prevCart.map((cartItem) =>
-          cartItem._id === item._id
-            ? { ...cartItem, quantity: cartItem.quantity + quantity }
+      if (existingItemIndex !== -1) {
+        return prevCart.map((cartItem, index) =>
+          index === existingItemIndex
+            ? {
+                ...cartItem,
+                quantity: cartItem.quantity + quantity,
+                price: itemPrice,
+              }
             : cartItem
         );
-      } else {
-        return [...prevCart, { ...item, quantity }];
       }
+      return [...prevCart, { ...item, quantity, price: itemPrice }];
     });
   };
 
   const handleSendOrder = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("No token found");
+      setSnackbarMessage("Anmeldung erforderlich.");
+      setSnackbarOpen(true);
+      navigate("/login");
+      return; // Early exit if no token
+    }
+
+    // Decode the token to get the user ID
+    const decoded = jwtDecode(token);
+    const userId = decoded.id; // Make sure your token includes the user ID as 'id'
+
     try {
-      // Hier die Logik zum Senden der Bestellung zum Backend
-      // Zum Beispiel: await axios.post('URL_DEINES_BACKENDS', { items: cart });
-      console.log("Bestellung gesendet:", cart);
-      setCart([]); // Einkaufswagen leeren
-      setCartDialogOpen(false); // Dialog schließen
+      const salePromises = cart.map((item) => {
+        const saleData = {
+          userId,
+          productId: item._id,
+          count: item.quantity,
+          amount: item.quantity * item.price, // Berechnung des Gesamtbetrags
+        };
+
+        return axios.post(`${import.meta.env.VITE_API_URL}/sales`, saleData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      });
+
+      const saleResponses = await Promise.all(salePromises);
+      console.log("Bestellung gesendet:", saleResponses);
+      setCart([]); // Clear the cart
+      setCartDialogOpen(false); // Close the dialog
+      setSnackbarMessage("Bestellung erfolgreich gesendet.");
+      setSnackbarOpen(true);
     } catch (error) {
       console.error("Fehler beim Senden der Bestellung:", error);
+      setSnackbarMessage("Fehler beim Senden der Bestellung.");
+      setSnackbarOpen(true);
+      if (error.response && error.response.status === 401) {
+        navigate("/login");
+      }
     }
   };
 
@@ -157,13 +200,25 @@ admin/sales?product=${selectedProduct}`,
     setIsConfirmDialogOpen(true);
   };
 
-  const handleOrderConfirm = () => {
+  const handleOrderConfirm = (item, quantity) => {
     setIsConfirmDialogOpen(false);
-    handleAddToCart(selectedItem);
+    handleAddToCart(item, quantity); // Hier wird quantity weitergegeben
     handleSnackbarOpen(
-      `${selectedItem.name} wurde zum Einkaufswagen hinzugefügt.`
+      `${item.name} wurde mit der Menge ${quantity} zum Einkaufswagen hinzugefügt.`
     );
   };
+
+  // Verwenden im JSX-Teil deiner Komponente
+  {
+    selectedItem && (
+      <ConfirmOrderDialog
+        open={isConfirmDialogOpen}
+        onClose={() => setIsConfirmDialogOpen(false)}
+        onConfirm={handleOrderConfirm} // onConfirm erwartet nun zwei Parameter: item und quantity
+        selectedItem={selectedItem}
+      />
+    );
+  }
 
   // Filtere die Items basierend auf der ausgewählten Kategorie
   const filteredItems = items.filter((item) =>
@@ -177,19 +232,17 @@ admin/sales?product=${selectedProduct}`,
 
   const handleRemoveFromCart = (itemToRemove) => {
     setCart((prevCart) => {
-      const existingItem = prevCart.find(
+      const itemIndex = prevCart.findIndex(
         (item) => item._id === itemToRemove._id
       );
 
-      if (existingItem && existingItem.quantity > 1) {
-        // Verringert die Menge, wenn mehr als ein Artikel vorhanden ist
-        return prevCart.map((item) =>
-          item._id === itemToRemove._id
-            ? { ...item, quantity: item.quantity - 1 }
-            : item
+      if (itemIndex !== -1 && prevCart[itemIndex].quantity > 1) {
+        // Wenn die Menge größer als 1 ist, verringere sie
+        return prevCart.map((item, index) =>
+          index === itemIndex ? { ...item, quantity: item.quantity - 1 } : item
         );
       } else {
-        // Entfernt den Artikel, wenn die Menge 1 oder weniger ist
+        // Wenn die Menge 1 oder weniger ist, entferne den Artikel
         return prevCart.filter((item) => item._id !== itemToRemove._id);
       }
     });
@@ -212,40 +265,11 @@ admin/sales?product=${selectedProduct}`,
     ? items.filter((item) => item.name.startsWith(selectedLetter))
     : items;
 
-  const AlphabetSidebar = () => (
-    <div
-      style={{
-        position: "fixed", // Fixierte Positionierung
-        right: "0", // Rechter Rand des Bildschirms
-        top: "20%", // Startet etwas von oben, um nicht ganz oben am Bildschirmrand zu kleben
-        display: "flex", // Flexbox für die Anordnung
-        flexDirection: "column", // Elemente vertikal anordnen
-        alignItems: "center", // Zentriert die Inhalte
-        gap: "8px", // Abstand zwischen den Buchstaben
-        zIndex: 1, // Oberste Schicht, über dem Inhalt
-      }}
-    >
-      {alphabet.map((letter) => (
-        <Button
-          key={letter}
-          onClick={() => handleLetterSelection(letter)}
-          style={{
-            minWidth: "30px", // Minimale Breite jedes Buchstaben-Buttons
-            padding: "5px", // Polsterung für die Buttons
-            fontSize: "12px", // Schriftgröße anpassen
-          }}
-        >
-          {letter}
-        </Button>
-      ))}
-    </div>
-  );
-
   const calculateTotalPrice = () => {
-    return cart.reduce((total, item) => total + item.quantity * item.price, 0);
+    return cart
+      .reduce((total, item) => total + item.quantity * item.price, 0)
+      .toFixed(2);
   };
-
-
 
   return (
     <>
@@ -282,10 +306,7 @@ admin/sales?product=${selectedProduct}`,
             {snackbarMessage}
           </Alert>
         </Snackbar>
-
-        {filteredItems.length > 5 && <AlphabetSidebar />}
-
-        <div className="flex flex-wrap justify-center items-center mt-36">
+        <div className="flex flex-wrap justify-center items-center mt-44">
           {filteredItems.map((item) => (
             <Button
               key={item._id}
@@ -325,7 +346,6 @@ admin/sales?product=${selectedProduct}`,
                   <ListItemSecondaryAction
                     style={{ display: "flex", alignItems: "center" }}
                   >
-                    {/* Minus Icon */}
                     <IconButton
                       edge="end"
                       aria-label="reduce"
@@ -333,11 +353,10 @@ admin/sales?product=${selectedProduct}`,
                     >
                       <RemoveIcon />
                     </IconButton>
-                    {/* Plus Icon */}
                     <IconButton
                       edge="end"
                       aria-label="increase"
-                      onClick={() => handleAddToCart(item)}
+                      onClick={() => handleAddToCart(item, 1)}
                     >
                       <AddIcon />
                     </IconButton>
@@ -346,14 +365,15 @@ admin/sales?product=${selectedProduct}`,
               >
                 <ListItemText
                   primary={item.name}
-                  secondary={`Menge: ${item.quantity}, Gesamtpreis: ${
+                  secondary={`Menge: ${item.quantity}, Gesamtpreis: ${(
                     item.quantity * item.price
-                  } €`}
-                  primaryTypographyProps={{ variant: "h6" }} // Größerer Text
+                  ).toFixed(2)} € (inkl. Pfand)`}
+                  primaryTypographyProps={{ variant: "h6" }}
                 />
               </ListItem>
             ))}
           </List>
+
           <div
             style={{
               color: "red",

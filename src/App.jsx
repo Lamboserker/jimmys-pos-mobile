@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Login from "./components/Auth/Login";
 import Register from "./components/Auth/Register";
 import EmployeeDashboard from "./components/Dashboard/employeeDashboard";
+import Picker from "./components/Picker/Picker";
+
 function App() {
   return (
     <div
@@ -15,9 +17,9 @@ function App() {
       <Router>
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/picker" element={<Picker />} />
           <Route path="/register" element={<Register />} />
           <Route path="/employeedashboard" element={<EmployeeDashboard />} />
-
           <Route path="/" element={<Login />} />
         </Routes>
       </Router>

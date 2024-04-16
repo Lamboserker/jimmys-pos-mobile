@@ -25,7 +25,7 @@ const Login = () => {
       // Überprüfen, ob ein Token vorhanden ist, um den erfolgreichen Login anzuzeigen
       if (response.data.token) {
         // Falls erfolgreich eingeloggt, prüfen Sie nicht den Benutzerstatus
-        navigate("/employeedashboard"); // Annahme: Weiterleitung nach erfolgreicher Anmeldung
+        navigate("/picker"); // Annahme: Weiterleitung nach erfolgreicher Anmeldung
       } else {
         console.error("Kein Token erhalten. Login fehlgeschlagen.");
       }
@@ -64,10 +64,10 @@ const Login = () => {
                 <input
                   id="userInput"
                   name="userInput"
-                  type="text" // Typ geändert zu 'text', um beides zu akzeptieren
+                  type="text"
                   autoComplete="username"
                   required
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  className="block w-full rounded-md border-0 py-1.5 px-2 text-white font-semibold shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   value={userInput}
                   onChange={(e) => setUserInput(e.target.value)}
                 />
@@ -98,7 +98,7 @@ const Login = () => {
                   type="password"
                   autoComplete="current-password"
                   required
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  className="block w-full rounded-md border-0 py-1.5 px-2 text-white font-semibold shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </div>

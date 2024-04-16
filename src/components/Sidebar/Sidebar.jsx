@@ -23,8 +23,8 @@ export default function TemporaryDrawer() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("token"); // Token aus dem lokalen Speicher entfernen
-    navigate("/login"); // Zum Login umleiten
+    localStorage.removeItem("token"); 
+    navigate("/login"); 
   };
 
   const DrawerList = (

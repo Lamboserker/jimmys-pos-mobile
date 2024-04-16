@@ -1,0 +1,12 @@
+
+
+ {
+  "appId": "com.jimmysposmobile.app",
+  "appName": "JimmysPosMobile",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  }
+}
+
+
