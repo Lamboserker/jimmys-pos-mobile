@@ -3,11 +3,16 @@
  {
   "appId": "com.jimmysposmobile.app",
   "appName": "JimmysPosMobile",
-  "icon": "./"
   "webDir": "dist",
   "server": {
     "androidScheme": "https"
-  }
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  },
+  "cordova": {}
 }
 
 

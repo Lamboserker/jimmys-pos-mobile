@@ -98,6 +98,19 @@ const EmployeeDashboard = () => {
       if (!selectedProduct) return;
 
       try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          console.error("No token found");
+          setSnackbarMessage("Anmeldung erforderlich.");
+          setSnackbarOpen(true);
+          navigate("/login");
+          return; // Early exit if no token
+        }
+
+        // Decode the token to get the user ID
+        const decoded = jwtDecode(token);
+        const userId = decoded.id; // Make sure your token includes the user ID as 'id'
+
         const response = await axios.get(
           `${
             import.meta.env.VITE_API_URL
@@ -105,7 +118,7 @@ const EmployeeDashboard = () => {
 admin/sales?product=${selectedProduct}`,
           {
             headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
+              Authorization: `Bearer ${token}`,
             },
           }
         );
@@ -163,14 +176,10 @@ admin/sales?product=${selectedProduct}`,
       return; // Early exit if no token
     }
 
-    // Decode the token to get the user ID
-    const decoded = jwtDecode(token);
-    const userId = decoded.id; // Make sure your token includes the user ID as 'id'
-
     try {
       const salePromises = cart.map((item) => {
         const saleData = {
-          userId,
+          userId: jwtDecode(token).id,
           productId: item._id,
           count: item.quantity,
           amount: item.quantity * item.price, // Berechnung des Gesamtbetrags

@@ -4,10 +4,17 @@ import { Link, useNavigate } from "react-router-dom";
 import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
 import Snackbar from "@mui/material/Snackbar";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import InputAdornment from "@mui/material/InputAdornment";
+import IconButton from "@mui/material/IconButton";
+import TextField from "@mui/material/TextField";
+import { AccountCircle } from "@mui/icons-material";
 
 const Login = () => {
   const [userInput, setUserInput] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [open, setOpen] = useState(false);
@@ -19,6 +26,11 @@ const Login = () => {
       return;
     }
     setOpen(false);
+  };
+
+  // Funktion zum Umschalten der Passwort-Sichtbarkeit
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   const handleLogin = async (event) => {
@@ -54,43 +66,69 @@ const Login = () => {
             src="https://static.wixstatic.com/media/46be4a_6c3f161a74e24760a2be8db1349380ee~mv2.png/v1/fill/w_159,h_159,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/logo_startseite-1.png"
             alt="Jimmys mobile Cocktailbar"
           />
-          <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-white">
+          <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-white mb-5">
             Melde dich an
           </h2>
           <form className="space-y-6" onSubmit={handleLogin}>
             <div>
               <label
                 htmlFor="userInput"
-                className="block text-sm font-medium text-white"
+                className="block text-sm font-medium text-white mb-3"
               >
                 Benutzername oder E-Mail
               </label>
-              <input
+              <TextField
                 id="userInput"
                 type="text"
                 required
                 disabled={loading}
                 autoComplete={userInput.includes("@") ? "email" : "username"}
-                className="text-black appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                fullWidth
+                variant="outlined"
                 value={userInput}
                 onChange={(e) => setUserInput(e.target.value)}
+                InputProps={{
+                  className: "text-black", // Schriftfarbe schwarz
+                  style: { backgroundColor: "white" }, // Hintergrundfarbe weiß
+                  startAdornment: (
+                    <InputAdornment position="end">
+                      <AccountCircle />
+                    </InputAdornment>
+                  ),
+                }}
               />
             </div>
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-white"
+                className="block text-sm font-medium text-white mb-3"
               >
                 Passwort
               </label>
-              <input
+              <TextField
                 id="password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 required
                 disabled={loading}
                 autoComplete="current-password"
-                className="text-black appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                fullWidth
+                variant="outlined"
                 onChange={(e) => setPassword(e.target.value)}
+                InputProps={{
+                  className: "text-black", // Schriftfarbe schwarz
+                  style: { backgroundColor: "white" }, // Hintergrundfarbe weiß
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={togglePasswordVisibility}
+                        edge="end"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
               />
             </div>
             <div>

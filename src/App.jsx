@@ -4,6 +4,7 @@ import Login from "./components/Auth/Login";
 import Register from "./components/Auth/Register";
 import EmployeeDashboard from "./components/Dashboard/employeeDashboard";
 import Picker from "./components/Picker/Picker";
+import VerifyEmail from "./components/Auth/VeryfyEmail";
 
 function App() {
   return (
@@ -16,11 +17,12 @@ function App() {
     >
       <Router>
         <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/picker" element={<Picker />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/employeedashboard" element={<EmployeeDashboard />} />
           <Route path="/" element={<Login />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/verify-email" element={<VerifyEmail />} />{" "}
+          <Route path="/picker" element={<Picker />} />
+          <Route path="/employeedashboard" element={<EmployeeDashboard />} />
         </Routes>
       </Router>
     </div>
