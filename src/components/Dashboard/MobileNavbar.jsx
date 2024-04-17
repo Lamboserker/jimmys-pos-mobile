@@ -2,22 +2,22 @@ import React, { useState } from "react";
 import Box from "@mui/material/Box";
 import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
-import Badge from "@mui/material/Badge"; // Stelle sicher, dass Badge importiert ist
+import Badge from "@mui/material/Badge";
 import MenuIcon from "@mui/icons-material/Menu";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import TemporaryDrawer from "../Sidebar/Sidebar";
 
 export default function MobileNavBar({
-  openDrawer,
+  openDrawer, // Stellen Sie sicher, dass diese Funktion den Drawer steuert
   openCartDialog,
-  cartLength, // Diese Prop wird die Anzahl der Items im Warenkorb empfangen
+  cartLength,
 }) {
   const [value, setValue] = useState(0);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
     if (newValue === 0) {
-      openDrawer(true);
+      openDrawer(true); // Öffnet den Drawer, wenn auf das Menu-Icon geklickt wird
     } else if (newValue === 1) {
       openCartDialog(true);
     }
@@ -31,7 +31,11 @@ export default function MobileNavBar({
         onChange={handleChange}
         sx={{ display: "flex", justifyContent: "space-between" }}
       >
-        <BottomNavigationAction label="Menu" icon={<TemporaryDrawer />} />
+        <BottomNavigationAction
+          label="Menu"
+          icon={<MenuIcon />}
+          onClick={() => openDrawer(true)} // Hier erfolgt der Aufruf
+        />
         <BottomNavigationAction
           label="Warenkorb"
           icon={
@@ -39,6 +43,7 @@ export default function MobileNavBar({
               <ShoppingCartIcon />
             </Badge>
           }
+          onClick={() => openCartDialog(true)} // Nutze hier die übergebene Funktion `openCartDialog`
         />
       </BottomNavigation>
     </Box>

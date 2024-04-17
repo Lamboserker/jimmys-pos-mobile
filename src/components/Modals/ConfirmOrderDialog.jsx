@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -13,6 +13,11 @@ import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 
 const ConfirmOrderDialog = ({ open, onClose, onConfirm, selectedItem }) => {
   const [quantity, setQuantity] = useState(1);
+
+  // Effekt zum Zurücksetzen der Anzahl, wenn sich das selectedItem ändert
+  useEffect(() => {
+    setQuantity(1);
+  }, [selectedItem]);
 
   // Funktion, um die Anzahl zu erhöhen
   const increaseQuantity = () => {

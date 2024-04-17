@@ -3,7 +3,6 @@ import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
 import "./index.css";
 import { EventProvider } from "./Context/EventContext.jsx";
-import { name as appName } from "../app.json";
 
 import "./index.css";
 import "@fontsource/roboto/300.css";

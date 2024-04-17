@@ -1,10 +1,6 @@
 import * as React from "react";
 import PropTypes from "prop-types";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
-import TemporaryDrawer from "../Sidebar/Sidebar";
+import { Box, Tabs, Tab, Typography } from "@mui/material";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -44,92 +40,38 @@ export default function BasicTabs({ handleTypeSelection }) {
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
-    switch (newValue) {
-      case 0:
-        handleTypeSelection("alcoholicDrinks");
-        break;
-      case 1:
-        handleTypeSelection("nonAlcohol");
-        break;
-      case 2:
-        handleTypeSelection("rest");
-        break;
-      case 3:
-        handleTypeSelection("Pfand");
-        break;
-
-      default:
-        handleTypeSelection("alcoholicDrinks");
-    }
+    handleTypeSelection(
+      ["alcoholicDrinks", "nonAlcohol", "rest", "Pfand"][newValue]
+    );
   };
+
   return (
-    <>
-      <Box
-        sx={{
-          width: "100%", // volle Breite verwenden
-          borderBottom: 1,
-          borderColor: "divider",
-          maxWidth: "100%", // Stelle sicher, dass keine maximale Breite eingestellt ist
-        }}
-      >
-        <Tabs
-          value={value}
-          onChange={handleChange}
-          aria-label="Alle Getränke filtern"
-          variant="scrollable"
-          scrollButtons="auto" // automatische Anzeige der Scroll-Buttons
-          allowScrollButtonsMobile
-        >
-          <Tab
-            style={{ color: "white", height: "50px" }}
-            label="Alkoholische Getränke"
-            {...a11yProps(0)}
-          />
-          <Tab
-            style={{ color: "white", height: "50px" }}
-            label="Alkoholfreie Getränke"
-            {...a11yProps(1)}
-          />
-          <Tab
-            style={{ color: "white", height: "50px" }}
-            label="Rest"
-            {...a11yProps(2)}
-          />
-          <Tab
-            style={{ color: "white", height: "50px" }}
-            label="Pfand"
-            {...a11yProps(3)}
-          />
-        </Tabs>
-      </Box>
-      <CustomTabPanel
-        style={{ color: "white", height: "50px" }}
+    <Box sx={{ width: "100%", borderBottom: 1, borderColor: "divider" }}>
+      <Tabs
         value={value}
-        index={0}
+        onChange={handleChange}
+        aria-label="tab example"
+        variant="scrollable"
+        scrollButtons="auto"
+        allowScrollButtonsMobile
       >
+        <Tab label="Alkoholische Getränke" {...a11yProps(0)} />
+        <Tab label="Alkoholfreie Getränke" {...a11yProps(1)} />
+        <Tab label="Rest" {...a11yProps(2)} />
+        <Tab label="Pfand" {...a11yProps(3)} />
+      </Tabs>
+      <CustomTabPanel value={value} index={0}>
         Alkoholische Getränke
       </CustomTabPanel>
-      <CustomTabPanel
-        style={{ color: "white", height: "50px" }}
-        value={value}
-        index={1}
-      >
+      <CustomTabPanel value={value} index={1}>
         Alkoholfreie Getränke
       </CustomTabPanel>
-      <CustomTabPanel
-        style={{ color: "white", height: "50px" }}
-        value={value}
-        index={2}
-      >
+      <CustomTabPanel value={value} index={2}>
         Rest
       </CustomTabPanel>
-      <CustomTabPanel
-        style={{ color: "white", height: "50px" }}
-        value={value}
-        index={3}
-      >
+      <CustomTabPanel value={value} index={3}>
         Pfand
       </CustomTabPanel>
-    </>
+    </Box>
   );
 }

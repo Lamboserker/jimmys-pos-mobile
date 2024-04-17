@@ -28,7 +28,7 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import MenuIcon from "@mui/icons-material/Menu";
 import ConfirmOrderDialog from "../Modals/ConfirmOrderDialog";
 import BasicTabs from "../Navigation/Tabs";
-
+import TemporaryDrawer from "../Sidebar/Sidebar";
 const EmployeeDashboard = () => {
   const [items, setItems] = useState([]);
   const [cart, setCart] = useState([]);
@@ -52,12 +52,16 @@ const EmployeeDashboard = () => {
   // Stil für die Karten
   const cardStyle = {
     margin: "8px",
-    width: "80%",
-    height: "100px",
+    width: "calc(100% - 16px)", // Passt die Breite an den Bildschirm an
+    height: "120px", // Höher für bessere Sichtbarkeit
     backgroundColor: "#7c73e6",
-    color: "black",
-    textShadow: "0 0 2px rgba(0,0,0,0.5)",
-    fontWeight: "bold",
+    color: "white",
+    fontSize: "16px", // Größere Schrift für bessere Lesbarkeit
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    borderRadius: "10px", // Abgerundete Ecken für ein moderneres Aussehen
+    boxShadow: "0 4px 8px rgba(0,0,0,0.2)", // Schatten für Tiefe
   };
 
   const categories = [
@@ -271,10 +275,14 @@ admin/sales?product=${selectedProduct}`,
       .toFixed(2);
   };
 
+  const handleCartDialogOpen = () => {
+    setCartDialogOpen(true);
+  };
+
   return (
     <>
       <div className="w-full h-ful">
-        <div className="fixed top-0 left-0 right-0 bg-black z-20 p-3 flex justify-between">
+        <div className="fixed top-0 left-0 right-0  z-20 p-3 flex justify-between bg-white">
           <BasicTabs handleTypeSelection={handleTypeSelection} />
           <div style={{ position: "absolute", top: "20px", right: 0 }}></div>
         </div>
@@ -282,6 +290,12 @@ admin/sales?product=${selectedProduct}`,
           open={snackbarOpen}
           autoHideDuration={6000}
           onClose={handleSnackbarClose}
+          sx={{
+            width: "100%",
+            position: "fixed",
+            bottom: 70, // Passt den Abstand vom unteren Bildschirmrand an
+            zIndex: 120, // Stellen Sie sicher, dass dieser Wert über dem von MobileNavBar liegt
+          }}
         >
           <Alert
             onClose={handleSnackbarClose}
@@ -291,20 +305,27 @@ admin/sales?product=${selectedProduct}`,
             {snackbarMessage}
           </Alert>
         </Snackbar>
-        <div className="flex flex-wrap justify-center items-center mt-24">
-          {filteredItems.map((item) => (
+        <div className="flex flex-wrap justify-center items-center mt-36 mb-20">
+          {items.map((item) => (
             <Button
               key={item._id}
               variant="outlined"
-              color="primary"
               onClick={() => handleItemClick(item)}
-              style={cardStyle} // Anwendung des Stils
+              style={cardStyle}
             >
-              {item.name}
+              <div>
+                <div>{item.name}</div>
+                <div style={{ fontSize: "14px", color: "#BDBDBD" }}>
+                  Preis:{" "}
+                  {eventType === "schlemmermarkt" ? item.price2 : item.price} €
+                </div>
+              </div>
+              <i edge="end" aria-label="add">
+                <ShoppingCartIcon />
+              </i>
             </Button>
           ))}
         </div>
-        {console.log("selectedItem:", selectedItem)}
         {selectedItem && (
           <ConfirmOrderDialog
             open={isConfirmDialogOpen}
@@ -378,9 +399,14 @@ admin/sales?product=${selectedProduct}`,
         </DialogActions>
       </Dialog>
       <MobileNavBar
+        openDrawer={setDrawerOpen}
+        openCartDialog={handleCartDialogOpen}
         cartLength={cart.length}
-        openDrawer={() => setDrawerOpen(true)}
-        openCartDialog={() => setCartDialogOpen(true)}
+      />
+
+      <TemporaryDrawer
+        open={drawerOpen}
+        toggleDrawer={(isOpen) => setDrawerOpen(isOpen)}
       />
     </>
   );
