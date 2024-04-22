@@ -143,26 +143,32 @@ admin/sales?product=${selectedProduct}`,
   }, [selectedProduct, navigate]);
 
   const handleAddToCart = (item, quantity = 1) => {
-    const deposit = 3; // Pfandpreis von 3 Euro
-    const basePrice = eventType === "schlemmermarkt" ? item.price2 : item.price;
-    const itemPrice = basePrice + deposit; // Berechne den Gesamtpreis inklusive Pfand
+    const isPfandItem = item.type === "Pfand";
+    let itemPrice = eventType === "schlemmermarkt" ? item.price2 : item.price;
+
+    // Pfand nur für Nicht-Pfand-Artikel hinzufügen
+    let finalPrice = isPfandItem ? itemPrice : itemPrice + 3;
 
     setCart((prevCart) => {
       const existingItemIndex = prevCart.findIndex(
         (cartItem) => cartItem._id === item._id
       );
+
       if (existingItemIndex !== -1) {
+        // Wenn der Artikel bereits im Warenkorb ist, aktualisiere nur die Menge und den Preis
         return prevCart.map((cartItem, index) =>
           index === existingItemIndex
             ? {
                 ...cartItem,
                 quantity: cartItem.quantity + quantity,
-                price: itemPrice,
+                price: finalPrice, // Aktualisiere den Preis nur, wenn nötig
               }
             : cartItem
         );
+      } else {
+        // Füge neuen Artikel mit dem angepassten Preis hinzu
+        return [...prevCart, { ...item, quantity, price: finalPrice }];
       }
-      return [...prevCart, { ...item, quantity, price: itemPrice }];
     });
   };
 
@@ -215,10 +221,17 @@ admin/sales?product=${selectedProduct}`,
 
   const handleOrderConfirm = (item, quantity) => {
     setIsConfirmDialogOpen(false);
-    handleAddToCart(item, quantity); // Hier wird quantity weitergegeben
-    handleSnackbarOpen(
-      `${item.name} wurde mit der Menge ${quantity} zum Einkaufswagen hinzugefügt.`
-    );
+    handleAddToCart(item, quantity);
+
+    // Bereite eine spezifische Nachricht für Pfand-Items vor
+    if (item.type === "Pfand") {
+      handleSnackbarOpen(`3€ wurden aufgrund von Pfand gutgeschrieben.`);
+    } else {
+      // Für alle anderen Item-Typen
+      handleSnackbarOpen(
+        `${item.name} wurde mit der Menge ${quantity} zum Einkaufswagen hinzugefügt.`
+      );
+    }
   };
 
   // Verwenden im JSX-Teil deiner Komponente
@@ -270,14 +283,6 @@ admin/sales?product=${selectedProduct}`,
     setSnackbarOpen(false);
   };
 
-  const handleLetterSelection = (letter) => {
-    setSelectedLetter(letter);
-  };
-
-  const filteredByLetterItems = selectedLetter
-    ? items.filter((item) => item.name.startsWith(selectedLetter))
-    : items;
-
   const calculateTotalPrice = () => {
     return cart
       .reduce((total, item) => total + item.quantity * item.price, 0)
@@ -314,7 +319,7 @@ admin/sales?product=${selectedProduct}`,
             {snackbarMessage}
           </Alert>
         </Snackbar>
-        <div className="flex flex-wrap justify-center items-center mt-36 mb-20">
+        <div className="flex flex-wrap justify-center items-center mt-36 mb-3">
           {items.map((item) => (
             <Button
               key={item._id}

@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import axios from "axios";
+import React, { useState, useEffect } from "react";
+import { performLogin, performLogout } from "../../services/authServices";
 import { Link, useNavigate } from "react-router-dom";
 import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
@@ -18,8 +18,26 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [open, setOpen] = useState(false);
-  const apiUrl = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleNetworkChange = () => {
+      if (!navigator.onLine) {
+        setError(
+          "Sie sind derzeit offline und können im eingeschränkten Modus arbeiten."
+        );
+        setOpen(true);
+      }
+    };
+
+    window.addEventListener("online", handleNetworkChange);
+    window.addEventListener("offline", handleNetworkChange);
+
+    return () => {
+      window.removeEventListener("online", handleNetworkChange);
+      window.removeEventListener("offline", handleNetworkChange);
+    };
+  }, []);
 
   const handleClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -37,24 +55,19 @@ const Login = () => {
     event.preventDefault();
     setLoading(true);
 
-    try {
-      const loginData = userInput.includes("@")
-        ? { email: userInput, password } // Wenn die Eingabe ein "@" enthält, behandele es als E-Mail
-        : { name: userInput, password }; // Andernfalls behandele es als Benutzername
+    const loginData = userInput.includes("@")
+      ? { email: userInput, password }
+      : { name: userInput, password };
 
-      const response = await axios.post(`${apiUrl}/users/login`, loginData);
-      if (response.data.token) {
-        localStorage.setItem("token", response.data.token);
-        navigate("/picker");
-      } else {
-        throw new Error("Login fehlgeschlagen. Kein Token erhalten.");
-      }
-    } catch (error) {
-      setError(error.response?.data?.message || "Anmeldefehler.");
+    const result = await performLogin(loginData);
+
+    if (result.success) {
+      navigate("/picker");
+    } else {
+      setError(result.message);
       setOpen(true);
-    } finally {
-      setLoading(false);
     }
+    setLoading(false);
   };
 
   return (

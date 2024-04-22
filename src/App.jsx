@@ -8,21 +8,16 @@ import VerifyEmail from "./components/Auth/VeryfyEmail";
 
 function App() {
   return (
-    <div
-      style={{
-        backgroundColor: "#fafafa",
-        minHeight: "100vh",
-        minWidth: "100vw",
-      }}
-    >
+    <div className="max-h-screen w-full">
       <Router>
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/verify-email" element={<VerifyEmail />} />{" "}
+          <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/picker" element={<Picker />} />
           <Route path="/employeedashboard" element={<EmployeeDashboard />} />
+          {/* Verkaufshistorie hinzugefügt */}
         </Routes>
       </Router>
     </div>
