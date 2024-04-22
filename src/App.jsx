@@ -5,6 +5,8 @@ import Register from "./components/Auth/Register";
 import EmployeeDashboard from "./components/Dashboard/employeeDashboard";
 import Picker from "./components/Picker/Picker";
 import VerifyEmail from "./components/Auth/VeryfyEmail";
+import OrderHistory from "./components/Dashboard/OrderHistory/OrderHistory";
+import DetailledOrderHistory from "./components/Dashboard/OrderHistory/DetailledOrderHistory";
 
 function App() {
   return (
@@ -17,6 +19,11 @@ function App() {
           <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/picker" element={<Picker />} />
           <Route path="/employeedashboard" element={<EmployeeDashboard />} />
+          <Route path="/order-history" element={<OrderHistory />} />
+          <Route
+            path="/detailled-order-history/:orderId"
+            element={<DetailledOrderHistory />}
+          />
           {/* Verkaufshistorie hinzugefügt */}
         </Routes>
       </Router>

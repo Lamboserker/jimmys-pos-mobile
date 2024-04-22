@@ -51,17 +51,17 @@ const EmployeeDashboard = () => {
 
   // Stil für die Karten
   const cardStyle = {
-    margin: "8px",
-    width: "calc(100% - 16px)", // Passt die Breite an den Bildschirm an
-    height: "120px", // Höher für bessere Sichtbarkeit
+    margin: "4px", // Reduzieren Sie den Abstand, um Platz zu sparen
+    width: "calc(50% - 8px)", // Passt die Breite an, um zwei Karten pro Zeile zu ermöglichen
+    height: "152px", // Höher für bessere Sichtbarkeit
     backgroundColor: "#7c73e6",
     color: "white",
-    fontSize: "16px", // Größere Schrift für bessere Lesbarkeit
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    borderRadius: "10px", // Abgerundete Ecken für ein moderneres Aussehen
-    boxShadow: "0 4px 8px rgba(0,0,0,0.2)", // Schatten für Tiefe
+    borderRadius: "10px",
+    boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
+    padding: "10px", // Fügt Polsterung innerhalb der Karte hinzu
   };
 
   const categories = [
@@ -215,8 +215,7 @@ admin/sales?product=${selectedProduct}`,
   };
 
   const handleItemClick = (item) => {
-    setSelectedItem(item);
-    setIsConfirmDialogOpen(true);
+    handleAddToCart(item, 1); // Fügt direkt 1 Stück des Items zum Warenkorb hinzu
   };
 
   const handleOrderConfirm = (item, quantity) => {
@@ -319,35 +318,44 @@ admin/sales?product=${selectedProduct}`,
             {snackbarMessage}
           </Alert>
         </Snackbar>
-        <div className="flex flex-wrap justify-center items-center mt-36 mb-3">
+        <div
+          className="flex flex-wrap justify-center items-center mt-36 mb-3"
+          style={{ maxHeight: "480px" }}
+        >
           {items.map((item) => (
             <Button
               key={item._id}
               variant="outlined"
-              onClick={() => handleItemClick(item)}
+              onClick={() => handleItemClick(item)} // Verwenden der aktualisierten handleItemClick Funktion
               style={cardStyle}
             >
-              <div>
-                <div>{item.name}</div>
+              <div style={{ flex: 1, textAlign: "left" }}>
+                <div style={{ fontSize: "16px", fontWeight: "bold" }}>
+                  {item.name}
+                </div>
                 <div style={{ fontSize: "14px", color: "#BDBDBD" }}>
                   Preis:{" "}
                   {eventType === "schlemmermarkt" ? item.price2 : item.price} €
                 </div>
               </div>
-              <i edge="end" aria-label="add">
+              <i
+                style={{ flex: "none", color: "white" }}
+                edge="end"
+                aria-label="add"
+              >
                 <ShoppingCartIcon />
               </i>
             </Button>
           ))}
         </div>
-        {selectedItem && (
+        {/* {selectedItem && (
           <ConfirmOrderDialog
             open={isConfirmDialogOpen}
             onClose={() => setIsConfirmDialogOpen(false)}
             onConfirm={handleOrderConfirm}
             selectedItem={selectedItem}
           />
-        )}
+        )} */}
       </div>
       <Dialog
         open={cartDialogOpen}

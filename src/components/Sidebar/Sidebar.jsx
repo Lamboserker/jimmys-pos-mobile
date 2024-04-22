@@ -12,13 +12,31 @@ import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 
-export default function TemporaryDrawer({ open, toggleDrawer }) {
+export default function TemporaryDrawer({ open, toggleDrawer, currentPage }) {
   const navigate = useNavigate();
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/login");
   };
+
+  const handleNavigation = (path) => {
+    toggleDrawer(false); // Schublade schließen bevor navigiert wird
+    navigate(path);
+  };
+
+  const menuItems =
+    currentPage === "orderHistory"
+      ? [
+          { name: "Verkäufe Erfassen", path: "/employeedashboard" },
+          { name: "Logout", path: "/login" },
+        ]
+      : [
+          { name: "Bestell-History", path: "/order-history" },
+          { name: "Storno-Anfrage", path: "/cancel-request" },
+          { name: "Statistiken", path: "/statistics" },
+          { name: "Logout", path: "/login" },
+        ];
 
   const DrawerList = (
     <Box
@@ -32,18 +50,16 @@ export default function TemporaryDrawer({ open, toggleDrawer }) {
         alt="Jimmys mobile Cocktailbar"
       />
       <List style={{ marginTop: "50px" }}>
-        {["Post Eingang", "Storno-Anfrage", "Statistiken"].map(
-          (text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          )
-        )}
+        {menuItems.map((item, index) => (
+          <ListItem key={item.name} disablePadding>
+            <ListItemButton onClick={() => handleNavigation(item.path)}>
+              <ListItemIcon>
+                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+              </ListItemIcon>
+              <ListItemText primary={item.name} />
+            </ListItemButton>
+          </ListItem>
+        ))}
       </List>
       <Divider />
       <List style={{ position: "absolute", bottom: 0 }}>

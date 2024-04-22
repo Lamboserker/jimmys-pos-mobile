@@ -34,7 +34,7 @@ export default function MobileNavBar({
         <BottomNavigationAction
           label="Menu"
           icon={<MenuIcon />}
-          onClick={() => openDrawer(true)} // Hier erfolgt der Aufruf
+          onClick={() => openDrawer(true)} 
         />
         <BottomNavigationAction
           label="Warenkorb"
