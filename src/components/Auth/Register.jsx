@@ -42,14 +42,13 @@ const Register = () => {
     try {
       const userData = {
         name,
-        email,
         password,
         role,
       };
 
       const response = await axios.post(`${apiUrl}/users/register`, userData);
       if (response.status === 201) {
-        navigate("/verify-email", { state: { email } });
+        navigate("/login", { state: { email: name } }); // Hier könnte statt E-Mail die Bestätigung über Benutzername erfolgen.
       } else {
         throw new Error("Registrierung fehlgeschlagen. Kein Token erhalten.");
       }
@@ -101,32 +100,6 @@ const Register = () => {
                       <AccountCircle />
                     </InputAdornment>
                   ),
-                }}
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-white mb-3"
-              >
-                Email
-              </label>
-              <TextField
-                sx={{
-                  backgroundColor: "white",
-                  borderRadius: "0.375rem", // Abgerundete Ecken
-                }}
-                id="email"
-                type="email"
-                required
-                disabled={loading}
-                autoComplete="email"
-                fullWidth
-                variant="outlined"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                InputProps={{
-                  className: "text-black",
                 }}
               />
             </div>

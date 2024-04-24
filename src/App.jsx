@@ -4,7 +4,6 @@ import Login from "./components/Auth/Login";
 import Register from "./components/Auth/Register";
 import EmployeeDashboard from "./components/Dashboard/employeeDashboard";
 import Picker from "./components/Picker/Picker";
-import VerifyEmail from "./components/Auth/VeryfyEmail";
 import OrderHistory from "./components/Dashboard/OrderHistory/OrderHistory";
 import DetailledOrderHistory from "./components/Dashboard/OrderHistory/DetailledOrderHistory";
 
@@ -16,7 +15,6 @@ function App() {
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/picker" element={<Picker />} />
           <Route path="/employeedashboard" element={<EmployeeDashboard />} />
           <Route path="/order-history" element={<OrderHistory />} />

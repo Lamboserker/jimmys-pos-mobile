@@ -55,9 +55,7 @@ const Login = () => {
     event.preventDefault();
     setLoading(true);
 
-    const loginData = userInput.includes("@")
-      ? { email: userInput, password }
-      : { name: userInput, password };
+    const loginData = { name: userInput, password };
 
     const result = await performLogin(loginData);
 
@@ -88,14 +86,14 @@ const Login = () => {
                 htmlFor="userInput"
                 className="block text-sm font-medium text-white mb-3"
               >
-                Benutzername oder E-Mail
+                Benutzername
               </label>
               <TextField
                 id="userInput"
                 type="text"
                 required
                 disabled={loading}
-                autoComplete={userInput.includes("@") ? "email" : "username"}
+                autoComplete="username"
                 fullWidth
                 variant="outlined"
                 value={userInput}
