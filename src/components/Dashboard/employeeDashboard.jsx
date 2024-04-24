@@ -368,7 +368,11 @@ const EmployeeDashboard = () => {
                 key={item._id}
                 secondaryAction={
                   <ListItemSecondaryAction
-                    style={{ display: "flex", alignItems: "center" }}
+                    style={{
+                      display: "flex",
+                      justifyContent: "flex-end",
+                      alignItems: "center",
+                    }}
                   >
                     <IconButton
                       edge="end"
@@ -391,7 +395,7 @@ const EmployeeDashboard = () => {
                   primary={item.name}
                   secondary={`Menge: ${item.quantity}, Gesamtpreis: ${(
                     item.quantity * item.price
-                  ).toFixed(2)} € (inkl. Pfand)`}
+                  ).toFixed(2)} €`}
                   primaryTypographyProps={{ variant: "h6" }}
                 />
               </ListItem>
