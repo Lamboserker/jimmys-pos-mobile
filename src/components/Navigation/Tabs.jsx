@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { Box, Tabs, Tab, Typography } from "@mui/material";
 
@@ -36,15 +36,17 @@ function a11yProps(index) {
 }
 
 export default function BasicTabs({ handleTypeSelection }) {
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = useState(0);
+  const types = ["alcoholicDrinks", "nonAlcohol", "rest", "Pfand"];
+
+  useEffect(() => {
+    handleTypeSelection(types[value]);
+  }, [handleTypeSelection]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
-    handleTypeSelection(
-      ["alcoholicDrinks", "nonAlcohol", "rest", "Pfand"][newValue]
-    );
+    handleTypeSelection(types[newValue]);
   };
-
   return (
     <Box sx={{ width: "100%", borderBottom: 1, borderColor: "divider" }}>
       <Tabs

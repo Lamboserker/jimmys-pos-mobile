@@ -35,7 +35,7 @@ const EmployeeDashboard = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedTab, setSelectedTab] = useState(0);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
-  const [selectedType, setSelectedType] = useState("");
+  const [selectedType, setSelectedType] = useState("Alkoholische Getränke");
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -78,15 +78,20 @@ const EmployeeDashboard = () => {
           `${import.meta.env.VITE_API_URL}/items`
         );
         const data = response.data;
+        console.log("Geladene Items:", data); // Überprüfen Sie die geladenen Daten
 
-        const filteredData = selectedType
-          ? data.filter((item) => item.type === selectedType)
-          : data;
+        const filteredData = data.filter((item) => item.type === selectedType);
+        console.log(
+          "Gefilterte Items für Typ",
+          selectedType,
+          ":",
+          filteredData
+        ); // Überprüfen Sie die gefilterten Daten
+
         setItems(filteredData);
       } catch (error) {
         console.error("Fehler beim Abrufen der Items:", error);
       }
-      console.log("selectedType hat sich geändert", selectedType);
     };
 
     fetchItems();
@@ -114,8 +119,7 @@ const EmployeeDashboard = () => {
         const response = await axios.get(
           `${
             import.meta.env.VITE_API_URL
-          }/import TemporaryDrawer from './Sidebar';
-admin/sales?product=${selectedProduct}`,
+          }/admin/sales?product=${selectedProduct}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -294,8 +298,8 @@ admin/sales?product=${selectedProduct}`,
 
   return (
     <>
-      <div className="w-full h-ful">
-        <div className="fixed top-0 left-0 right-0  z-20 p-3 flex justify-between bg-white">
+      <div className="w-full h-ful ">
+        <div className="fixed top-0 left-0 right-0 z-20 p-3 flex justify-between bg-white">
           <BasicTabs handleTypeSelection={handleTypeSelection} />
           <div style={{ position: "absolute", top: "20px", right: 0 }}></div>
         </div>
@@ -319,14 +323,14 @@ admin/sales?product=${selectedProduct}`,
           </Alert>
         </Snackbar>
         <div
-          className="flex flex-wrap justify-center items-center mt-36 mb-3"
-          style={{ maxHeight: "480px" }}
+          className="flex flex-wrap justify-center items-center mt-36 mb-10"
+          style={{ maxHeight: "700px", overflowY: "auto" }}
         >
           {items.map((item) => (
             <Button
               key={item._id}
               variant="outlined"
-              onClick={() => handleItemClick(item)} // Verwenden der aktualisierten handleItemClick Funktion
+              onClick={() => handleItemClick(item)}
               style={cardStyle}
             >
               <div style={{ flex: 1, textAlign: "left" }}>
@@ -348,14 +352,6 @@ admin/sales?product=${selectedProduct}`,
             </Button>
           ))}
         </div>
-        {/* {selectedItem && (
-          <ConfirmOrderDialog
-            open={isConfirmDialogOpen}
-            onClose={() => setIsConfirmDialogOpen(false)}
-            onConfirm={handleOrderConfirm}
-            selectedItem={selectedItem}
-          />
-        )} */}
       </div>
       <Dialog
         open={cartDialogOpen}
