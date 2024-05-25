@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useEvent } from "../../Context/EventContext";
 import axios from "axios";
 import {
   Button,
-  Badge,
   Dialog,
   DialogActions,
   DialogContent,
@@ -25,7 +24,6 @@ import MobileNavBar from "./MobileNavbar";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
-import MenuIcon from "@mui/icons-material/Menu";
 import ConfirmOrderDialog from "../Modals/ConfirmOrderDialog";
 import BasicTabs from "../Navigation/Tabs";
 import TemporaryDrawer from "../Sidebar/Sidebar";
@@ -148,27 +146,35 @@ const EmployeeDashboard = () => {
 
   const handleAddToCart = (item, quantity = 1) => {
     const isPfandItem = item.type === "Pfand";
-    let itemPrice = eventType === "schlemmermarkt" ? item.price2 : item.price;
+    let itemPrice = item.price; // Default-Preis verwenden
+
+    // Preis je nach Eventtyp anpassen
+    if (eventType === "schlemmermarkt") {
+      itemPrice = item.price2; // Schlemmermarkt-Preis verwenden
+    } else if (eventType === "bierboerse") {
+      // Bierbörse-Preis verwenden
+      // Hier können Sie weitere Anpassungen für die Bierbörse vornehmen, falls erforderlich
+    }
 
     // Pfand nur für Nicht-Pfand-Artikel hinzufügen
     let finalPrice = isPfandItem ? itemPrice : itemPrice + 3;
 
     setCart((prevCart) => {
-      const existingItemIndex = prevCart.findIndex(
+      const existingItem = prevCart.find(
         (cartItem) => cartItem._id === item._id
       );
 
-      if (existingItemIndex !== -1) {
+      if (existingItem) {
         // Wenn der Artikel bereits im Warenkorb ist, aktualisiere nur die Menge und den Preis
-        return prevCart.map((cartItem, index) =>
-          index === existingItemIndex
+        const updatedCart = prevCart.map((cartItem) =>
+          cartItem._id === item._id
             ? {
                 ...cartItem,
                 quantity: cartItem.quantity + quantity,
-                price: finalPrice, // Aktualisiere den Preis nur, wenn nötig
               }
             : cartItem
         );
+        return updatedCart;
       } else {
         // Füge neuen Artikel mit dem angepassten Preis hinzu
         return [...prevCart, { ...item, quantity, price: finalPrice }];
@@ -381,6 +387,8 @@ const EmployeeDashboard = () => {
                     >
                       <RemoveIcon />
                     </IconButton>
+                    <div style={{ width: "28px" }} />{" "}
+                    {/* Platz zwischen den Icons */}
                     <IconButton
                       edge="end"
                       aria-label="increase"
