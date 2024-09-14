@@ -51,7 +51,6 @@ Before running the application, ensure you have the following installed:
 
   ## Usage
 
-  - # Sales Management:
-    Navigate to the sales screen to record and view sales. Use filters to search by product, date, or user.
-  - # Item Management: Browse and view details of items available in the inventory.
-  - # User Authentication: Log in to access the app's features and manage your sessions.
+  - **Sales Management:** Navigate to the sales screen to record and view sales. Use filters to search by product, date, or user.
+  - **Item Management:** Browse and view details of items available in the inventory.
+  - **User Authentication:** Log in to access the app's features and manage your sessions.
